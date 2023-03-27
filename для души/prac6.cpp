@@ -31,6 +31,13 @@ list* list_of_nodes(string list_numbers, list* beg) {
 		cout << "Некорректный ввод\n";
 		return 0;
 	}
+	if (!ss) {
+		auto end_time = chrono::high_resolution_clock::now();
+		auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+		cout << "Создан пустой лист\n";
+		cout << "Время выполнения: " << duration << " мкс" << "\n";
+		return 0;
+	}
 	auto end_time = chrono::high_resolution_clock::now();
 	auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
 	while (beg->head) {
@@ -50,7 +57,7 @@ list* create_list(int len) {
 		}
 		next = curr;
 	}
-	curr->head = NULL;
+	if (curr) curr->head = NULL;
 	return curr;
 }
 
@@ -90,7 +97,7 @@ list* clear_memory(list*& beg) {
 	return beg;
 }
 
-void index_output_for_incert(list* beg) {
+int index_output_for_incert(list* beg) {
 	int i = 1;
 	cout << "\n[ ";
 	while (beg) {
@@ -99,6 +106,7 @@ void index_output_for_incert(list* beg) {
 		i++;
 	}
 	cout << i << " ]\n>>";
+	return i;
 }
 
 void index_output_for_delete(list* beg) {
@@ -128,6 +136,9 @@ int find_element(list* beg, int index, int value) {
 			i++;
 			beg = beg->tail;
 		}
+		auto end_time = chrono::high_resolution_clock::now();
+		auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+		cout << "Время выполнения: " << duration << " мкс" << endl;
 		return 0;
 	}
 	else {
@@ -141,6 +152,9 @@ int find_element(list* beg, int index, int value) {
 			i++;
 			beg = beg->tail;
 		}
+		auto end_time = chrono::high_resolution_clock::now();
+		auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+		cout << "Время выполнения: " << duration << " мкс" << endl;
 		return 0;
 	}
 }
@@ -191,6 +205,10 @@ bool delete_element(list*& beg, int index, int value) {
 		beg = beg->tail;
 		i++;
 	}
+	auto end_time = chrono::high_resolution_clock::now();
+	auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+	cout << "Время выполнения: " << duration << " мкс" << endl;
+	beg = curr;
 	return 0;
 }
 
@@ -262,6 +280,13 @@ list* swap_elements(int element1, int element2, list* beg) {
 		if (curr->data == element1) e1 = curr;
 		curr = curr->tail;
 	}
+	if (!e1 || !e2) {
+		auto end_time = chrono::high_resolution_clock::now();
+		auto duration = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+		cout << "Не существует элемента для замены\n";
+		cout << "Время выполнения: " << duration << " мкс" << endl;
+		return beg;
+	}
 	list* prev1 = e1->head, * next1 = e1->tail, * prev2 = e2->head, * next2 = e2->tail;
 	if (next1 == e2) {
 		e2->tail = e1;
@@ -331,9 +356,12 @@ int main() {
 			{
 				cout << "Введите длинну списка\n>>";
 				cin >> len;
-				if (cin.fail() || len <= 0) {
+				if (cin.fail() || len < 0) {
 					cout << "Некоректный ввод\n>>";
 					break;
+				}
+				if (len == 0) {
+					cout << "Создан пустой лист\n";
 				}
 				beg = completed_list(len, beg);
 				list_output(beg);
@@ -377,7 +405,7 @@ int main() {
 				cout << "Элемент был удален\n";
 			}
 			else {
-				cout << "Элемент не найден\n>>";
+				cout << "Элемент не найден\n";
 			}
 			list_output(beg);
 			}
@@ -411,9 +439,14 @@ int main() {
 		case 5:
 		{
 			cout << "на какое место нужно вставить элемент?\n";
-			index_output_for_incert(beg);
+			int k;
+			k = index_output_for_incert(beg);
 			int index = 0, value, i = 1;
 			cin >> index;
+			if (index > k || index <= 0) {
+				cout << "Элемента не существует\n>>";
+				break;
+			}
 			len = length(beg);
 			for (;i < len + 1;i++) {
 				if (i == index) break;
